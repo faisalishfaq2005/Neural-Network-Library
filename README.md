@@ -1,0 +1,1 @@
+This project uses data structures to implement a basic neural network library, where user can upload data and train their models
