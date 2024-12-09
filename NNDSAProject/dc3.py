@@ -1,11 +1,13 @@
 import numpy as np
 from DataStructures.linklist import LinkList
+from DataStructures.queueADT import Queue
 from Layers.ActivationLayer import ActivationLayer
 from Layers.DenseLayer import DenseLayer
 from Layers.InputLayer import InputLayer
 from Layers.ActivationFunctions import sigmoid,sigmoid_derivative,relu,relu_derivative,leaky_relu,leaky_relu_derivative
 from Supporting_Functions.normalization import normalize,denormalize
 from Layers.lossFunctions import binary_cross_entropy,mse_loss
+from Supporting_Functions.batching import batch_split1,Batch
 
 input_features = np.array([
     [1436.35, 1, 24, 13.42],
@@ -130,15 +132,88 @@ price = np.array([
 ])
 price = price.reshape(-1, 1)
 
-def batch_split(features_array,output_array,batch_size):
-    batches_features=[features_array[i:i+batch_size] for i in range(0,len(features_array),batch_size)]
-    batches_output=[output_array[i:i+batch_size] for i in range(0,len(output_array),batch_size)]
-    return batches_features,batches_output
 
+input_features_normalized, input_min, input_max = normalize(input_features)
+price_normalized, price_min, price_max = normalize(price)
 
-    
-
-
+#batching
 batch_size_input=int(input("enter the batch size"))
-batches_input,batches_out=batch_split(input_features,price,batch_size_input)
-print(len(batches_out))
+epochs=int(input("Enter number of epochs"))
+
+
+
+
+
+
+
+
+
+nn = LinkList()
+
+
+
+nn.insert_node(DenseLayer(len(input_features_normalized[0]), 64)) 
+nn.print_previous_output_size()
+nn.insert_node(ActivationLayer(relu, relu_derivative))  
+nn.print_previous_output_size()
+
+nn.insert_node(DenseLayer(None, 16))
+nn.print_previous_output_size()
+nn.insert_node(ActivationLayer(relu, relu_derivative)) 
+nn.print_previous_output_size()
+
+
+nn.insert_node(DenseLayer(None, 1)) 
+nn.print_previous_output_size()
+
+# Training loop
+learning_rate = 0.001
+for i in range(epochs):
+    batch_queue=batch_split1(input_features_normalized,price_normalized,batch_size_input)
+    while batch_queue.is_empty() !=True:
+        batch=batch_queue.dequeue()
+        input_array=batch.feature_array
+        output_array=batch.output_array
+        predicted_output = nn.forward_propogation(input_array)  # Forward pass
+    
+        error = output_array - predicted_output  # Calculate error
+
+        loss = mse_loss(output_array, predicted_output)  # Calculate MSE loss
+        if i%1000==0:
+            print(f"Loss at iteration {i}: {loss}")
+
+        gradients_stack = nn.backward_propagation(error)  # Backpropagate error
+        nn.update_parameters(gradients_stack, learning_rate)  # Update weights and biases
+        """
+        if i==500:
+            print(f"predicted_output at {i}",predicted_output)
+            print(f"error at {i}",error)
+            print(f"gradientstack at {i}",gradients_stack)
+        if i==3000:
+            print(f"predicted_output at {i}",predicted_output)
+            print(f"error at {i}",error)
+            print(f"gradientstack at {i}",gradients_stack)
+        if i==9900:
+            print(f"predicted_output at {i}",predicted_output)
+            print(f"error at {i}",error)
+            print(f"gradientstack at {i}",gradients_stack)"""
+    
+layers=nn.get_all_nodes()
+for layer in layers:
+    if isinstance(layer,DenseLayer):
+        print(f"Weight Gradient Norm: {np.linalg.norm(layer.weight_gradient)}")
+
+
+new_input_data = np.array([
+    [1500.0, 3, 28, 22.5], 
+])
+
+new_input_data_normalized = (new_input_data - input_min) / (input_max - input_min)
+
+predicted_output_normalized = nn.forward_propogation(new_input_data_normalized)
+
+predicted_price = predicted_output_normalized * (price_max - price_min) + price_min
+
+print(f"Predicted price for new input data: {predicted_price}")
+
+#give performance parameters to user to check their performances

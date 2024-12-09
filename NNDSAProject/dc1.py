@@ -1,12 +1,13 @@
 import numpy as np
 from DataStructures.linklist import LinkList
+from DataStructures.queueADT import Queue
 from Layers.ActivationLayer import ActivationLayer
 from Layers.DenseLayer import DenseLayer
 from Layers.InputLayer import InputLayer
 from Layers.ActivationFunctions import sigmoid,sigmoid_derivative,relu,relu_derivative,leaky_relu,leaky_relu_derivative
 from Supporting_Functions.normalization import normalize,denormalize
 from Layers.lossFunctions import binary_cross_entropy,mse_loss
-from Supporting_Functions.batching import batch_split
+from Supporting_Functions.batching import batch_split,batch_split1,batch_split2,Batch
 
 input_features = np.array([
     [1436.35, 1, 24, 13.42],
@@ -139,9 +140,10 @@ price_normalized, price_min, price_max = normalize(price)
 batch_size_input=int(input("enter the batch size"))
 epochs=int(input("Enter number of epochs"))
 
-batches_in,batches_out=batch_split(input_features_normalized,price_normalized,batch_size_input)
+input_batches_arrays,output_batches_arrays=batch_split2(input_features_normalized,price_normalized,batch_size_input)
 
-
+print(input_batches_arrays[0])
+print(output_batches_arrays[0])
 
 nn = LinkList()
 
@@ -164,12 +166,13 @@ nn.print_previous_output_size()
 # Training loop
 learning_rate = 0.01
 for i in range(epochs):
-    for batch_in,batch_out in zip(batches_in,batches_out):
-        predicted_output = nn.forward_propogation(batch_in)  # Forward pass
+    for input_batch,output_batch in zip(input_batches_arrays,output_batches_arrays):
+        
+        predicted_output = nn.forward_propogation(input_batch)  # Forward pass
     
-        error = batch_out - predicted_output  # Calculate error
+        error = output_batch - predicted_output  # Calculate error
 
-        loss = mse_loss(batch_out, predicted_output)  # Calculate MSE loss
+        loss = mse_loss(output_batch, predicted_output)  # Calculate MSE loss
         if i%1000==0:
             print(f"Loss at iteration {i}: {loss}")
 
@@ -196,16 +199,14 @@ for layer in layers:
 
 
 new_input_data = np.array([
-    [1500.0, 3, 28, 22.5],  # Example new data (replace with actual new data)
+    [1500.0, 3, 28, 22.5], 
 ])
 
-# Normalize the new input data using the same min and max values from the training data
 new_input_data_normalized = (new_input_data - input_min) / (input_max - input_min)
 
-# Get the predicted output by passing the normalized input data through the network
 predicted_output_normalized = nn.forward_propogation(new_input_data_normalized)
 
-# Denormalize the predicted output to get it back to the original price scale
 predicted_price = predicted_output_normalized * (price_max - price_min) + price_min
 
 print(f"Predicted price for new input data: {predicted_price}")
+
