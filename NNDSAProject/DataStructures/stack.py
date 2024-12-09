@@ -11,7 +11,9 @@ class Stack:
         else:
             return False
         
-
+    def display_all(self):
+        for ele in self.stack:
+            print(f"ele in stack {ele.Weights_gradients}   {ele.Bias_gradients}" )
     def pop(self):
         if self.is_empty():
             print("stack empty cannot pop")
