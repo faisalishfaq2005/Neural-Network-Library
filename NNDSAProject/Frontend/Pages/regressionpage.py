@@ -15,8 +15,6 @@ from Layers.lossFunctions import binary_cross_entropy,mse_loss
 from Supporting_Functions.batching import batch_split1,Batch
 import plotly.graph_objects as go
 
-
-# CSS for frontend styling
 st.markdown("""
     <style>
     .center {
@@ -63,7 +61,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# App Title and Header
 st.title("🧠 Neural Network Regression Trainer")
 st.markdown("### Build, Train, and Evaluate a Neural Network with Intuitive Controls")
 
@@ -76,7 +73,6 @@ nn=LinkList()
 nn_trained=LinkList()
 
 
-# Step 1: Upload the dataset
 st.markdown("#### Step 1: Upload Your Dataset")
 uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 if uploaded_file:
@@ -93,7 +89,6 @@ else:
     st.info("Please upload a CSV file to proceed.")
     st.stop()
 
-# Step 2: Normalization
 st.markdown("#### Step 2: Data Normalization")
 normalize_data = st.checkbox("Normalize Data?", value=True)
 if normalize_data and input_features is not None and input_features.size > 0 and output_features is not None and output_features.size > 0:
@@ -110,7 +105,7 @@ else:
 print(input_features_normalized)
 print(output_features_normalized)
 
-# Step 3: Define Neural Network Layers
+
 
 
 if "nn_structure" not in st.session_state:
@@ -162,7 +157,6 @@ if st.button("Add Layer"):
         
         st.session_state.nn_structure.append({"type": "Activation", "activation": activation})
 
-# Display added layers
 st.markdown("### Current Neural Network Structure:")
 if st.session_state.nn_structure:
     for idx, layer in enumerate(st.session_state.nn_structure):
@@ -177,39 +171,37 @@ def visualize_nn_interactive(structure):
     """Interactive neural network visualization with full connections between layers."""
     fig = go.Figure()
 
-    layer_spacing = 130  # Space between layers
-    neuron_spacing = 50 # Reduced space between neurons within a layer
-    neuron_radius = 70 # Radius for neurons
+    layer_spacing = 130  
+    neuron_spacing = 50 
+    neuron_radius = 70
 
-    positions = []  # Store (x, y) positions of neurons for connections
+    positions = []  
 
-    # Draw layers
     for i, layer in enumerate(structure):
         x = i * layer_spacing
-        neurons = 3  # Fixed number of neurons per layer for visualization
+        neurons = 3  
         y_positions = np.linspace(-neurons * neuron_spacing / 2, neurons * neuron_spacing / 2, neurons)
         positions.append([(x, y) for y in y_positions])
 
         for y in y_positions:
-            # Add neuron circles
+          
             fig.add_trace(go.Scatter(
                 x=[x], y=[y],
                 mode="markers+text",
                 marker=dict(size=neuron_radius, color="white", line=dict(color="black", width=2)),
-                text=layer.get("type", ""),  # Show the type of the layer
-                textfont=dict(color="black", size=12),  # Darker text for labels
+                text=layer.get("type", ""),
+                textfont=dict(color="black", size=12),
                 textposition="bottom center",
                 showlegend=False
             ))
 
-    # Add connections between neurons in adjacent layers
     for layer_idx in range(len(positions) - 1):
         current_layer = positions[layer_idx]
         next_layer = positions[layer_idx + 1]
 
         for (x1, y1) in current_layer:
             for (x2, y2) in next_layer:
-                # Add connection line
+                
                 fig.add_trace(go.Scatter(
                     x=[x1, x2], y=[y1, y2],
                     mode="lines",
@@ -217,7 +209,6 @@ def visualize_nn_interactive(structure):
                     showlegend=False
                 ))
 
-    # Customize layout
     fig.update_layout(
         title="Interactive Neural Network Visualization",
         xaxis=dict(visible=False),
@@ -229,12 +220,11 @@ def visualize_nn_interactive(structure):
 
     return fig
 
-# Render visualization if layers exist
 if st.session_state.nn_structure:
     fig = visualize_nn_interactive(st.session_state.nn_structure)
     st.plotly_chart(fig, use_container_width=True)
 
-# Step 4: Training Configuration
+
 st.markdown("#### Step 4: Training Configuration")
 batch_size = int(st.number_input("Batch Size:", value=32, min_value=1, step=1))
 epochs = int(st.number_input("Number of Epochs:", value=1000, min_value=1, step=1))
@@ -242,7 +232,6 @@ learning_rate = st.number_input("Learning Rate:", value=0.01, min_value=0.0001, 
 
 
 
-# Step 5: Train the Model
 st.markdown("#### Step 5: Train Your Neural Network")
 correct_predictions = 0
 total_predictions = 0
@@ -275,7 +264,7 @@ if st.button("Start Training 🚀"):
 
             loss = mse_loss(output_array, predicted_output) 
             
-            threshold = 0.05  # Define acceptable error threshold
+            threshold = 0.05 
             correct_predictions += np.sum(np.abs(output_array - predicted_output) <= threshold)
             total_predictions += output_array.size
 
@@ -301,13 +290,11 @@ if st.button("Start Training 🚀"):
 
     
 
-# After training, options for evaluation
 st.markdown("### What Would You Like to Do Next?")
 action = st.selectbox("Choose Action:", ["Check Model Accuracy", "Make Predictions"])
 
 if action == "Check Model Accuracy":
 
-    #Use a loop or accumulate predictions to match the full dataset size.
     accuracy_percentage=0
     if correct_predictions>0 and total_predictions>0:
         accuracy_percentage = (correct_predictions / total_predictions) * 100
