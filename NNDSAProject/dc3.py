@@ -7,7 +7,7 @@ from Layers.InputLayer import InputLayer
 from Layers.ActivationFunctions import sigmoid,sigmoid_derivative,relu,relu_derivative,leaky_relu,leaky_relu_derivative
 from Supporting_Functions.normalization import normalize,denormalize
 from Layers.lossFunctions import binary_cross_entropy,mse_loss
-from Supporting_Functions.batching import batch_split1,Batch
+from Supporting_Functions.batching import batch_split1
 
 input_features = np.array([
     [1436.35, 1, 24, 13.42],
@@ -210,4 +210,3 @@ predicted_price = predicted_output_normalized * (price_max - price_min) + price_
 
 print(f"Predicted price for new input data: {predicted_price}")
 
-#give performance parameters to user to check their performances
