@@ -131,7 +131,8 @@ price = np.array([
     490000.5, 540000.3, 510000.4, 530000.5, 580000.4,
 ])
 price = price.reshape(-1, 1)
-
+print(input_features.shape)
+print(price)
 
 input_features_normalized, input_min, input_max = normalize(input_features)
 price_normalized, price_min, price_max = normalize(price)
@@ -144,14 +145,7 @@ epochs=int(input("Enter number of epochs"))
 
 
 
-
-
-
-
 nn = LinkList()
-
-
-
 nn.insert_node(DenseLayer(len(input_features_normalized[0]), 64)) 
 nn.print_previous_output_size()
 nn.insert_node(ActivationLayer(relu, relu_derivative))  
@@ -167,23 +161,23 @@ nn.insert_node(DenseLayer(None, 1))
 nn.print_previous_output_size()
 
 # Training loop
-learning_rate = 0.001
+learning_rate = 0.01
 for i in range(epochs):
     batch_queue=batch_split1(input_features_normalized,price_normalized,batch_size_input)
     while batch_queue.is_empty() !=True:
         batch=batch_queue.dequeue()
         input_array=batch.feature_array
         output_array=batch.output_array
-        predicted_output = nn.forward_propogation(input_array)  # Forward pass
+        predicted_output = nn.forward_propogation(input_array) 
     
-        error = output_array - predicted_output  # Calculate error
+        error = output_array - predicted_output  
 
-        loss = mse_loss(output_array, predicted_output)  # Calculate MSE loss
+        loss = mse_loss(output_array, predicted_output) 
         if i%1000==0:
             print(f"Loss at iteration {i}: {loss}")
 
-        gradients_stack = nn.backward_propagation(error)  # Backpropagate error
-        nn.update_parameters(gradients_stack, learning_rate)  # Update weights and biases
+        gradients_stack = nn.backward_propagation(error) 
+        nn.update_parameters(gradients_stack, learning_rate) 
         """
         if i==500:
             print(f"predicted_output at {i}",predicted_output)
@@ -207,7 +201,7 @@ for layer in layers:
 new_input_data = np.array([
     [1500.0, 3, 28, 22.5], 
 ])
-
+print("new input data shape",new_input_data.shape)
 new_input_data_normalized = (new_input_data - input_min) / (input_max - input_min)
 
 predicted_output_normalized = nn.forward_propogation(new_input_data_normalized)

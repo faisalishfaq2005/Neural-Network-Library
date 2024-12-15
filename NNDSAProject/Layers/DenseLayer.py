@@ -7,7 +7,7 @@ class DenseLayer:
 
         
         
-        if input_neurons!= None:
+        if input_neurons!=None:
             #limit = np.sqrt(6 / (input_neurons + neurons))  # For Xavier
             #self.weights = np.random.uniform(-limit, limit, (self.input_neurons, self.neurons))
             #self.bias = np.zeros((1, self.neurons))

@@ -49,6 +49,20 @@ class LinkList:
         current.next_pointer = node
         node.previous_pointer = current
 
+    def insert_node_without_updates(self,layer):
+        node = Node(layer)
+        if self.head_pointer is None:
+            self.head_pointer = node
+            return
+        
+      
+        current = self.head_pointer
+        while current.next_pointer:
+            current = current.next_pointer
+        
+      
+        current.next_pointer = node
+        node.previous_pointer = current
 
     def print_previous_output_size(self):
         print("previos output size", self.previous_output_size)
@@ -114,7 +128,11 @@ class LinkList:
             current_layer.data.weights += learning_rate* updating_params.Weights_gradients
             current_layer.data.bias += learning_rate*updating_params.Bias_gradients
 
-        
+    def print_nodes(self):
+        current_layer=self.head_pointer
+        while current_layer.next_pointer is not None:
+            print(current_layer.data)
+            current_layer=current_layer.next_pointer
 
         
 
