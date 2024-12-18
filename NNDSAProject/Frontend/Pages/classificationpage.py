@@ -63,7 +63,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🧠 Neural Network Regression Trainer")
+st.title("🧠 Neural Network Classification Trainer")
 st.markdown("### Build, Train, and Evaluate a Neural Network with Intuitive Controls")
 
 data=None
